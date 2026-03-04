@@ -1,0 +1,35 @@
+# Données
+raw/
+data/
+*.fastq*
+*.fq*
+*.bam
+*.sam
+*.vcf
+*.gz
+*.zip
+*.tar
+
+# Résultats (traçables via runs.log)
+results/
+
+# Logs SLURM
+logs/
+*.out
+*.err
+
+# Temporaires
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
