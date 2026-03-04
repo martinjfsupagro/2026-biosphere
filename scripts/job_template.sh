@@ -3,7 +3,7 @@
 # Template SLURM générique
 # 1. cp scripts/job_template.sh scripts/mon_job.sh
 # 2. Remplir les sections marquées  ← ICI
-# 3. git commit avant de soumettre
+# 3. git add -A && git commit -m "description" avant de soumettre
 # ─────────────────────────────────────────────────────────────────────────────
 
 #SBATCH --job-name=MON_JOB          # ← ICI
@@ -29,8 +29,15 @@ RUN_RESULTS="$PROJECT_DIR/results/$RUN_ID"
 mkdir -p "$RUN_SCRATCH" "$RUN_RESULTS"
 
 # ── Traçabilité (ne pas modifier) ─────────────────────────────────────────────
+# Bloque le job si des changements non commités existent
+if ! git -C "$PROJECT_DIR" diff-index --quiet HEAD --; then
+    echo "ERREUR : des changements non commités existent dans $PROJECT_DIR"
+    echo "Fais un  git add -A && git commit -m 'description'  avant de soumettre."
+    exit 1
+fi
+
 GIT_HASH=$(git -C "$PROJECT_DIR" rev-parse --short HEAD 2>/dev/null || echo "no-git")
-cp "$0" "$RUN_RESULTS/job_script.sh"
+cp "$0" "$RUN_RESULTS/job_script.sh"    # fige le script exact utilisé
 
 _log() { echo "$(date -Iseconds) | $RUN_ID | $1 | $GIT_HASH | $(basename "$0") | ${2:-}" >> "$PROJECT_DIR/runs.log"; }
 trap '_log FAIL "exit $?"'   ERR
