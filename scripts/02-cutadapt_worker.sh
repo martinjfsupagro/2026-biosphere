@@ -5,12 +5,10 @@
 # Variables reçues via --export : MARKER, FWD, REV
 # ─────────────────────────────────────────────────────────────────────────────
 
-#SBATCH --job-name=cutadapt_%j
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=${SLURM_MAIL}
-#SBATCH --time=02:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
 #SBATCH --account=ondemand@biomics

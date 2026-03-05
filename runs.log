@@ -996,3 +996,6 @@ T3_L001
 2026-03-05T13:28:17+01:00 | cutadapt_HEX_4256766 | FAIL | e30a3d3 | slurm_script | exit 1
 2026-03-05T13:28:18+01:00 | cutadapt_LEP_4256765 | FAIL | e30a3d3 | slurm_script | exit 1
 2026-03-05T13:28:19+01:00 | cutadapt_HCO_4256767 | FAIL | e30a3d3 | slurm_script | exit 1
+2026-03-05T13:37:50+01:00 | cutadapt_HCO_4256835 | START | 559e5a1 | slurm_script | marker=HCO
+2026-03-05T13:37:52+01:00 | cutadapt_HEX_4256834 | START | 559e5a1 | slurm_script | marker=HEX
+2026-03-05T13:38:03+01:00 | cutadapt_LEP_4256833 | START | 559e5a1 | slurm_script | marker=LEP
