@@ -41,7 +41,7 @@ _log START "marker=$MARKER"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ANALYSE
-RAW_DIR="$PROJECT_DIR/datatest"
+RAW_DIR="$PROJECT_DIR/data"
 mkdir -p "$RUN_SCRATCH/demux"
 
 echo "==> Marqueur : $MARKER"
