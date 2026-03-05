@@ -65,6 +65,7 @@ for R1 in "$RAW_DIR"/*_R1_001.fastq.gz; do
     cutadapt \
         -g "${MARKER}=${FWD}" \
         -G "${MARKER}=${REV}" \
+        --nextseq-trim=20 \
         --pair-filter=both \
         --discard-untrimmed \
         --minimum-length 120 \
