@@ -999,3 +999,9 @@ T3_L001
 2026-03-05T13:37:50+01:00 | cutadapt_HCO_4256835 | START | 559e5a1 | slurm_script | marker=HCO
 2026-03-05T13:37:52+01:00 | cutadapt_HEX_4256834 | START | 559e5a1 | slurm_script | marker=HEX
 2026-03-05T13:38:03+01:00 | cutadapt_LEP_4256833 | START | 559e5a1 | slurm_script | marker=LEP
+2026-03-05T13:40:50+01:00 | cutadapt_HCO_4256843 | START | ee3c533 | slurm_script | marker=HCO
+2026-03-05T13:40:50+01:00 | cutadapt_LEP_4256841 | START | ee3c533 | slurm_script | marker=LEP
+2026-03-05T13:40:54+01:00 | cutadapt_HEX_4256842 | START | ee3c533 | slurm_script | marker=HEX
+2026-03-05T14:12:55+01:00 | cutadapt_HEX_4256842 | END | ee3c533 | slurm_script | marker=HEX samples=499 reads=211129577
+2026-03-05T14:13:54+01:00 | cutadapt_HCO_4256843 | END | ee3c533 | slurm_script | marker=HCO samples=499 reads=149367683
+2026-03-05T14:20:46+01:00 | cutadapt_LEP_4256841 | END | ee3c533 | slurm_script | marker=LEP samples=499 reads=173039155
