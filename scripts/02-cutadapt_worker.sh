@@ -13,8 +13,9 @@
 #SBATCH --time=02:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
-#SBATCH --qos=cpu-ondemand
-
+#SBATCH --account=ondemand@biomics
+#SBATCH --qos=cpu-ondemand-long
+#SBATCH --time=4:00:00
 
 set -euo pipefail
 
