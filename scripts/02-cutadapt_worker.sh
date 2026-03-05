@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
 # Cutadapt worker : démultiplexage par marqueur pour un sample
-# Ne pas lancer directement — soumis par 02-cutadapt_launcher.sh via sbatch
-# Variables reçues via --export : SAMPLE, R1, R2, MARKERS_STR, FWDS_STR, REVS_STR
+# Ne pas lancer directement — soumis par 02_cutadapt_launcher.sh via sbatch
+# Variables reçues via --export : SAMPLE, R1, R2, PRIMERS_FILE
 # ─────────────────────────────────────────────────────────────────────────────
 
 #SBATCH --job-name=cutadapt_%j
@@ -43,11 +43,6 @@ _log START "sample=$SAMPLE"
 # ANALYSE
 cd "$RUN_SCRATCH"
 
-# ── Désérialisation des primers ───────────────────────────────────────────────
-IFS=',' read -ra MARKERS <<< "$MARKERS_STR"
-IFS=',' read -ra FWDS    <<< "$FWDS_STR"
-IFS=',' read -ra REVS    <<< "$REVS_STR"
-
 # ── Fonction reverse complement ───────────────────────────────────────────────
 revcomp() {
     echo "$1" \
@@ -56,10 +51,20 @@ revcomp() {
       | rev
 }
 
+# ── Lecture des primers depuis le fichier de config ───────────────────────────
+declare -a MARKERS FWDS REVS
+while IFS=$'\t' read -r marker fwd rev; do
+    [[ "$marker" =~ ^#  ]] && continue
+    [[ -z "$marker"     ]] && continue
+    MARKERS+=("$marker")
+    FWDS+=("$fwd")
+    REVS+=("$rev")
+done < "$PRIMERS_FILE"
+
+echo "==> Cutadapt : $SAMPLE ($(date))"
+echo "    Marqueurs : ${MARKERS[*]}"
+
 # ── Construction des arguments cutadapt ──────────────────────────────────────
-# Linked adapters : -g "MARKER=^FWD...REV_RC" ancre le primer en 5' de R1
-#                   -G "MARKER=^REV...FWD_RC" ancre le primer en 5' de R2
-# Tout ce qui est en dehors de l'insert (primers inclus) est supprimé
 CUTADAPT_ARGS=()
 for i in "${!MARKERS[@]}"; do
     marker="${MARKERS[$i]}"
@@ -73,9 +78,6 @@ for i in "${!MARKERS[@]}"; do
 done
 
 # ── Cutadapt ─────────────────────────────────────────────────────────────────
-echo "==> Cutadapt : $SAMPLE ($(date))"
-echo "    Marqueurs : ${MARKERS[*]}"
-
 mkdir -p "$RUN_SCRATCH/demux"
 
 cutadapt \

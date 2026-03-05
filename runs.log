@@ -6,3 +6,5 @@
 2026-03-05T10:06:34+01:00 | qc_fastqc_multiqc_4251346 | FAIL | 66700fd | slurm_script | exit 123
 2026-03-05T10:18:33+01:00 | qc_fastqc_multiqc_4251847 | START | d4dbe5a | slurm_script | 
 2026-03-05T10:31:53+01:00 | qc_fastqc_multiqc_4251847 | END | d4dbe5a | slurm_script | 
+2026-03-05T11:28:21+01:00 | cutadapt_%j_4252911 | START | cde2d1a | slurm_script | sample=1-10_10_L001
+2026-03-05T11:28:26+01:00 | cutadapt_%j_4252911 | END | cde2d1a | slurm_script | sample=1-10_10_L001
