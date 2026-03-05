@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Cutadapt worker : démultiplexage par marqueur pour un sample
+# Cutadapt worker : démultiplexage d'un marqueur sur tous les samples
 # Ne pas lancer directement — soumis par 02_cutadapt_launcher.sh via sbatch
-# Variables reçues via --export : SAMPLE, R1, R2, PRIMERS_FILE
+# Variables reçues via --export : MARKER, FWD, REV
 # ─────────────────────────────────────────────────────────────────────────────
 
 #SBATCH --job-name=cutadapt_%j
@@ -24,7 +24,7 @@ source "$WORK/projects/2026-biosphere/config/project.env"
 source /home/martinj/bin/etc/profile.d/conda.sh
 conda activate /home/martinj/bin/envs/cutadapt5.2
 
-# ── Répertoires (ne pas modifier) ────────────────────────────────────────────
+# ── Répertoires (ne pas modifier) ─────────────────────────────────────────────
 RUN_ID="${SLURM_JOB_NAME}_${SLURM_JOB_ID}"
 RUN_SCRATCH="$SCRATCH_DIR/$RUN_ID"
 RUN_RESULTS="$PROJECT_DIR/results/$RUN_ID"
@@ -37,75 +37,58 @@ cp "$0" "$RUN_RESULTS/job_script.sh"
 _log() { echo "$(date -Iseconds) | $RUN_ID | $1 | $GIT_HASH | $(basename "$0") | ${2:-}" >> "$PROJECT_DIR/runs.log"; }
 trap '_log FAIL "exit $?"'   ERR
 trap 'mv -f "${SLURM_JOB_NAME}_${SLURM_JOB_ID}".{out,err} "$PROJECT_DIR/logs/" 2>/dev/null || true' EXIT
-_log START "sample=$SAMPLE"
+_log START "marker=$MARKER"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ANALYSE
-cd "$RUN_SCRATCH"
-
-# ── Fonction reverse complement ───────────────────────────────────────────────
-revcomp() {
-    echo "$1" \
-      | tr 'ACGTacgtRYSWKMBDHVNryswkmbdhvn' \
-           'TGCAtgcaYRWSMKVHDBNyrwsmkvhdbn' \
-      | rev
-}
-
-# ── Lecture des primers depuis le fichier de config ───────────────────────────
-declare -a MARKERS FWDS REVS
-while IFS=$'\t' read -r marker fwd rev; do
-    [[ "$marker" =~ ^#  ]] && continue
-    [[ -z "$marker"     ]] && continue
-    MARKERS+=("$marker")
-    FWDS+=("$fwd")
-    REVS+=("$rev")
-done < "$PRIMERS_FILE"
-
-echo "==> Cutadapt : $SAMPLE ($(date))"
-echo "    Marqueurs : ${MARKERS[*]}"
-
-# ── Construction des arguments cutadapt ──────────────────────────────────────
-CUTADAPT_ARGS=()
-for i in "${!MARKERS[@]}"; do
-    marker="${MARKERS[$i]}"
-    fwd="${FWDS[$i]}"
-    rev="${REVS[$i]}"
-    fwd_rc=$(revcomp "$fwd")
-    rev_rc=$(revcomp "$rev")
-
-    CUTADAPT_ARGS+=( -g "${marker}=^${fwd}...${rev_rc}" )
-    CUTADAPT_ARGS+=( -G "${marker}=^${rev}...${fwd_rc}" )
-done
-
-# ── Cutadapt ─────────────────────────────────────────────────────────────────
+RAW_DIR="$PROJECT_DIR/datatest"
 mkdir -p "$RUN_SCRATCH/demux"
 
-cutadapt \
-    "${CUTADAPT_ARGS[@]}" \
-    --discard-untrimmed \
-    --pair-filter=both \
-    --minimum-length 120 \
-    -e 0.1 \
-    --cores "$SLURM_CPUS_PER_TASK" \
-    -o "$RUN_SCRATCH/demux/${SAMPLE}_{name}_R1.fastq.gz" \
-    -p "$RUN_SCRATCH/demux/${SAMPLE}_{name}_R2.fastq.gz" \
-    --json "$RUN_SCRATCH/demux/${SAMPLE}.cutadapt.json" \
-    "$R1" "$R2"
-
-echo "==> Cutadapt terminé : $(date)"
-
-# ── Résumé par marqueur ───────────────────────────────────────────────────────
+echo "==> Marqueur : $MARKER"
+echo "    FWD : $FWD"
+echo "    REV : $REV"
 echo ""
-echo "Reads par marqueur :"
-for marker in "${MARKERS[@]}"; do
-    f="$RUN_SCRATCH/demux/${SAMPLE}_${marker}_R1.fastq.gz"
-    if [[ -f "$f" ]]; then
-        n=$(zcat "$f" | wc -l)
-        printf "  %-8s : %d reads\n" "$marker" $(( n / 4 ))
-    else
-        printf "  %-8s : 0 reads (fichier absent)\n" "$marker"
+
+N_SAMPLES=0
+N_READS_TOTAL=0
+
+# ── Boucle sur tous les samples ───────────────────────────────────────────────
+for R1 in "$RAW_DIR"/*_R1_001.fastq.gz; do
+    [[ -f "$R1" ]] || { echo "Aucun fichier R1 trouvé dans $RAW_DIR"; exit 1; }
+
+    R2="${R1/_R1_001.fastq.gz/_R2_001.fastq.gz}"
+    if [[ ! -f "$R2" ]]; then
+        echo "⚠ R2 manquant pour $(basename "$R1"), ignoré"
+        continue
     fi
+
+    SAMPLE=$(basename "$R1" _R1_001.fastq.gz)
+
+    cutadapt \
+        -g "${MARKER}=${FWD}" \
+        -G "${MARKER}=${REV}" \
+        --pair-filter=both \
+        --discard-untrimmed \
+        --minimum-length 120 \
+        -e 0.1 \
+        --cores "$SLURM_CPUS_PER_TASK" \
+        -o "$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}_R1.fastq.gz" \
+        -p "$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}_R2.fastq.gz" \
+        --json "$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}.cutadapt.json" \
+        "$R1" "$R2" 2>&1 | grep -E "Pairs written|Total read pairs"
+
+    # Compter les reads écrits
+    f="$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}_R1.fastq.gz"
+    n=0
+    [[ -f "$f" ]] && n=$(zcat "$f" | wc -l) && n=$(( n / 4 ))
+    printf "  %-40s : %d reads\n" "$SAMPLE" "$n"
+
+    (( N_READS_TOTAL += n )) || true
+    (( N_SAMPLES++ ))        || true
 done
+
+echo ""
+echo "==> $MARKER terminé : $N_SAMPLES samples, $N_READS_TOTAL reads au total"
 
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -113,4 +96,4 @@ done
 rsync -av "$RUN_SCRATCH/" "$RUN_RESULTS/"
 echo "✓ Résultats → $RUN_RESULTS"
 
-_log END "sample=$SAMPLE"
+_log END "marker=$MARKER samples=$N_SAMPLES reads=$N_READS_TOTAL"
