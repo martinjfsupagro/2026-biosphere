@@ -45,7 +45,7 @@ for R1 in "$RAW_DIR"/*_R1_001.fastq.gz; do
         "$WORKER"
 
     echo "→ soumis : $SAMPLE"
-    (( N_JOBS++ ))
+        (( N_JOBS++ )) || true
 done
 
 echo ""
