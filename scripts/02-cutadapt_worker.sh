@@ -75,7 +75,7 @@ for R1 in "$RAW_DIR"/*_R1_001.fastq.gz; do
         -o "$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}_R1.fastq.gz" \
         -p "$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}_R2.fastq.gz" \
         --json "$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}.cutadapt.json" \
-        "$R1" "$R2" 2>&1 | grep -E "Pairs written|Total read pairs"
+        "$R1" "$R2"
 
     # Compter les reads écrits
     f="$RUN_SCRATCH/demux/${SAMPLE}_${MARKER}_R1.fastq.gz"
