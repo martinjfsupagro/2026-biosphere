@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
-# Vérifie qu'un run s'est bien terminé
-# Usage : bash scripts/check_run.sh results/{jobname}_{jobid}
+# Usage : ./check_run.sh qc_fastqc_multiqc_4251346
 
 set -euo pipefail
-RUN_DIR="${1:?Usage: check_run.sh <run_dir>}"
-[[ -d "$RUN_DIR" ]] || { echo "Dossier introuvable : $RUN_DIR"; exit 1; }
 
-PROJECT_DIR="$(cd "$(dirname "$RUN_DIR")/.." && pwd)"
-RUN_ID="$(basename "$RUN_DIR")"
+# ── Arguments ─────────────────────────────────────────────────────────────────
+RUN_ID="${1:?Usage: $0 <RUN_ID>}"
 
-echo
-echo "=== $RUN_ID ==="
-printf "Taille    : %s\n"  "$(du -sh "$RUN_DIR" | cut -f1)"
+source "$WORK/projects/2026-biosphere/config/project.env"   # ← ICI : remplacer PROJECT
+
+RUN_DIR="$PROJECT_DIR/results/$RUN_ID"
+
+if [[ ! -d "$RUN_DIR" ]]; then
+    echo "ERREUR : dossier introuvable → $RUN_DIR"
+    exit 1
+fi
+
+# ── Checks génériques ─────────────────────────────────────────────────────────
 printf "Fichiers  : %s\n"  "$(find "$RUN_DIR" -type f | wc -l)"
 
 echo
@@ -28,4 +32,18 @@ if grep -q "$RUN_ID | END" "$PROJECT_DIR/runs.log" 2>/dev/null; then
 else
     printf '\n  \033[31m✗ Pas de statut END dans runs.log\033[0m\n'
 fi
+
+# ── Checks spécifiques FastQC / MultiQC ───────────────────────────────────────
 echo
+echo "Rapport MultiQC :"
+MULTIQC_REPORT="$RUN_DIR/multiqc/multiqc_report.html"
+if [[ -f "$MULTIQC_REPORT" ]]; then
+    printf '  \033[32m✓ %s\033[0m\n' "$MULTIQC_REPORT"
+else
+    printf '  \033[31m✗ multiqc_report.html absent\033[0m\n'
+fi
+
+echo
+echo "Rapports FastQC :"
+NB_FASTQC=$(find "$RUN_DIR/fastqc" -name "*.html" 2>/dev/null | wc -l)
+printf "  %s rapport(s) html\n" "$NB_FASTQC"

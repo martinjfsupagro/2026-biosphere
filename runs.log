@@ -4,3 +4,5 @@
 2026-03-05T10:04:02+01:00 | qc_fastqc_multiqc_4251260 | FAIL | 6ff6792 | slurm_script | exit 123
 2026-03-05T10:06:32+01:00 | qc_fastqc_multiqc_4251346 | START | 66700fd | slurm_script | 
 2026-03-05T10:06:34+01:00 | qc_fastqc_multiqc_4251346 | FAIL | 66700fd | slurm_script | exit 123
+2026-03-05T10:18:33+01:00 | qc_fastqc_multiqc_4251847 | START | d4dbe5a | slurm_script | 
+2026-03-05T10:31:53+01:00 | qc_fastqc_multiqc_4251847 | END | d4dbe5a | slurm_script | 

@@ -1,0 +1,8 @@
+# Config amorces pour démultiplexage cutadapt
+# Colonnes : marker <TAB> forward_primer <TAB> reverse_primer
+# Les séquences sont en 5'→3', IUPAC accepté
+# Lignes commençant par # ignorées
+
+LEP	ATTCAACCAATCATAAAGATATTGG	CGTGGAAAWGCTATATCWGGTG
+HEX	HCCHGAYATRGCHTTYCC	TATDGTRATDGCHCCNGC
+HCO	GGWACWGGWTGAACWGTWTAYCCYCC	TAAACTTCAGGGTGACCAAAAAATCA
