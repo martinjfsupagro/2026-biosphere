@@ -2,3 +2,5 @@
 # Format : ISO-date | job_id | statut | git_hash | script | notes
 2026-03-05T10:04:00+01:00 | qc_fastqc_multiqc_4251260 | START | 6ff6792 | slurm_script | 
 2026-03-05T10:04:02+01:00 | qc_fastqc_multiqc_4251260 | FAIL | 6ff6792 | slurm_script | exit 123
+2026-03-05T10:06:32+01:00 | qc_fastqc_multiqc_4251346 | START | 66700fd | slurm_script | 
+2026-03-05T10:06:34+01:00 | qc_fastqc_multiqc_4251346 | FAIL | 66700fd | slurm_script | exit 123

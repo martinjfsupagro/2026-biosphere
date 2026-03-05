@@ -54,8 +54,7 @@ mkdir -p "$FASTQC_DIR" "$MULTIQC_DIR"
 echo "==> FastQC : $(date)"
 
 # Lister tous les fichiers à analyser
-FASTQ_FILES=( "$RAW_DIR"/*.fastq.gz "$RAW_DIR"/*.fq.gz )
-FASTQ_FILES=( $(printf '%s\n' "${FASTQ_FILES[@]}" | xargs -I{} ls {} 2>/dev/null) )
+mapfile -t FASTQ_FILES < <(find "$RAW_DIR" -maxdepth 1 \( -name "*.fastq.gz" -o -name "*.fq.gz" \) | sort)
 
 if [[ ${#FASTQ_FILES[@]} -eq 0 ]]; then
     echo "ERREUR : aucun fichier fastq.gz trouvé dans $RAW_DIR"
