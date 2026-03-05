@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# QC post-cutadapt : FastQC + MultiQC sur les reads trimmés (tous marqueurs)
+# QC post-cutadapt : FastQC + MultiQC comparatif (bruts vs trimmés)
 # Usage : sbatch 03_qc_post_cutadapt.sh
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -52,7 +52,7 @@ FASTQC_DIR="$RUN_SCRATCH/fastqc"
 MULTIQC_DIR="$RUN_SCRATCH/multiqc"
 mkdir -p "$FASTQC_DIR" "$MULTIQC_DIR"
 
-# ── 1. FastQC ─────────────────────────────────────────────────────────────────
+# ── 1. FastQC sur les reads trimmés ───────────────────────────────────────────
 echo "==> FastQC : $(date)"
 
 mapfile -t FASTQ_FILES < <(find "$RESULTS_DIR" -path "*/cutadapt_*/*.fastq.gz" | sort)
@@ -72,11 +72,20 @@ fastqc \
 
 echo "==> FastQC terminé : $(date)"
 
-# ── 2. MultiQC ────────────────────────────────────────────────────────────────
+# ── 2. MultiQC comparatif (bruts + trimmés) ───────────────────────────────────
 echo "==> MultiQC : $(date)"
+
+# Récupérer le dossier FastQC du QC initial (reads bruts)
+QC_INITIAL_DIR=$(find "$RESULTS_DIR" -path "*/qc_fastqc_multiqc_*/fastqc" -type d)
+
+if [[ -z "$QC_INITIAL_DIR" ]]; then
+    echo "AVERTISSEMENT : dossier FastQC initial non trouvé, rapport sans comparaison"
+    QC_INITIAL_DIR=""
+fi
 
 multiqc \
     "$FASTQC_DIR" \
+    ${QC_INITIAL_DIR:+"$QC_INITIAL_DIR"} \
     --outdir "$MULTIQC_DIR" \
     --filename "multiqc_report" \
     --dirs-depth 2 \
