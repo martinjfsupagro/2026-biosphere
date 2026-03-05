@@ -978,3 +978,9 @@ T3_L001
 2026-03-05T11:45:24+01:00 | cutadapt_6-464_464_L001_4253667 | END | 6745b41 | slurm_script | sample=6-464_464_L001
 2026-03-05T11:45:26+01:00 | cutadapt_6-350bis_350bis_L001_4253639 | END | 6745b41 | slurm_script | sample=6-350bis_350bis_L001
 2026-03-05T11:45:30+01:00 | cutadapt_6-235_235_L001_4253617 | END | 6745b41 | slurm_script | sample=6-235_235_L001
+2026-03-05T13:18:14+01:00 | cutadapt_HCO_4256723 | START | d1aa0e9 | slurm_script | marker=HCO
+2026-03-05T13:18:16+01:00 | cutadapt_LEP_4256721 | START | d1aa0e9 | slurm_script | marker=LEP
+2026-03-05T13:18:16+01:00 | cutadapt_HEX_4256722 | START | d1aa0e9 | slurm_script | marker=HEX
+2026-03-05T13:18:39+01:00 | cutadapt_LEP_4256721 | END | d1aa0e9 | slurm_script | marker=LEP samples=11 reads=1348986
+2026-03-05T13:18:39+01:00 | cutadapt_HCO_4256723 | END | d1aa0e9 | slurm_script | marker=HCO samples=11 reads=2811799
+2026-03-05T13:18:42+01:00 | cutadapt_HEX_4256722 | END | d1aa0e9 | slurm_script | marker=HEX samples=11 reads=1751490
