@@ -58,8 +58,8 @@ n_threads  <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset="16"))
 # ─────────────────────────────────────────────────────────────────────────
 cat("=== filterAndTrim (plaque 6) ===\n\n")
 
-all_R1 <- sort(list.files(demux_dir, pattern="_R1\\.fastq\\.gz\$", full.names=TRUE))
-all_R2 <- sort(list.files(demux_dir, pattern="_R2\\.fastq\\.gz\$", full.names=TRUE))
+all_R1 <- sort(list.files(demux_dir, pattern="_R1\\.fastq\\.gz$", full.names=TRUE))
+all_R2 <- sort(list.files(demux_dir, pattern="_R2\\.fastq\\.gz$", full.names=TRUE))
 if (length(all_R1) == 0) stop("Aucun fichier R1 trouvé dans ", demux_dir)
 
 idx <- grepl("^6-", basename(all_R1))
@@ -71,8 +71,8 @@ cat(sprintf("  %d samples détectés pour la plaque 6\n", length(R1)))
 filt_dir <- file.path(scratch, "filtered")
 dir.create(filt_dir, showWarnings=FALSE)
 
-out_R1 <- file.path(filt_dir, sub("_R1\\.fastq\\.gz\$", "_R1_filt.fastq.gz", basename(R1)))
-out_R2 <- file.path(filt_dir, sub("_R2\\.fastq\\.gz\$", "_R2_filt.fastq.gz", basename(R2)))
+out_R1 <- file.path(filt_dir, sub("_R1\\.fastq\\.gz$", "_R1_filt.fastq.gz", basename(R1)))
+out_R2 <- file.path(filt_dir, sub("_R2\\.fastq\\.gz$", "_R2_filt.fastq.gz", basename(R2)))
 
 out <- filterAndTrim(
     R1, out_R1, R2, out_R2,
@@ -109,10 +109,10 @@ cat("  ✓ Modèles chargés\n\n")
 # ─────────────────────────────────────────────────────────────────────────
 cat("=== dada + mergePairs (plaque 6) ===\n\n")
 
-R1_filt <- sort(list.files(filt_dir, pattern="_R1_filt\\.fastq\\.gz\$", full.names=TRUE))
-R2_filt <- sort(list.files(filt_dir, pattern="_R2_filt\\.fastq\\.gz\$", full.names=TRUE))
+R1_filt <- sort(list.files(filt_dir, pattern="_R1_filt\\.fastq\\.gz$", full.names=TRUE))
+R2_filt <- sort(list.files(filt_dir, pattern="_R2_filt\\.fastq\\.gz$", full.names=TRUE))
 
-sample_names <- sub("_R1_filt\\.fastq\\.gz\$", "", basename(R1_filt))
+sample_names <- sub("_R1_filt\\.fastq\\.gz$", "", basename(R1_filt))
 names(R1_filt) <- sample_names
 names(R2_filt) <- sample_names
 

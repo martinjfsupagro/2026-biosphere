@@ -59,8 +59,8 @@ n_threads  <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset="16"))
 plates     <- 1:5
 
 # ── Lister tous les fichiers R1/R2 du dossier demux ──────────────────────
-all_R1 <- sort(list.files(demux_dir, pattern="_R1\\.fastq\\.gz\$", full.names=TRUE))
-all_R2 <- sort(list.files(demux_dir, pattern="_R2\\.fastq\\.gz\$", full.names=TRUE))
+all_R1 <- sort(list.files(demux_dir, pattern="_R1\\.fastq\\.gz$", full.names=TRUE))
+all_R2 <- sort(list.files(demux_dir, pattern="_R2\\.fastq\\.gz$", full.names=TRUE))
 if (length(all_R1) == 0) stop("Aucun fichier R1 trouvé dans ", demux_dir)
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -80,8 +80,8 @@ for (plate in plates) {
 
     if (length(R1) == 0) { cat(sprintf("  aucun fichier pour plaque %d, ignoré\n", plate)); next }
 
-    out_R1 <- file.path(filt_dir, sub("_R1\\.fastq\\.gz\$", "_R1_filt.fastq.gz", basename(R1)))
-    out_R2 <- file.path(filt_dir, sub("_R2\\.fastq\\.gz\$", "_R2_filt.fastq.gz", basename(R2)))
+    out_R1 <- file.path(filt_dir, sub("_R1\\.fastq\\.gz$", "_R1_filt.fastq.gz", basename(R1)))
+    out_R2 <- file.path(filt_dir, sub("_R2\\.fastq\\.gz$", "_R2_filt.fastq.gz", basename(R2)))
 
     out <- filterAndTrim(
         R1, out_R1, R2, out_R2,
@@ -106,8 +106,8 @@ for (plate in plates) {
 # ─────────────────────────────────────────────────────────────────────────
 cat("=== learnErrors (plaque 1) ===\n\n")
 
-R1_P1 <- sort(list.files(filt_dir, pattern="^1-.*_R1_filt\\.fastq\\.gz\$", full.names=TRUE))
-R2_P1 <- sort(list.files(filt_dir, pattern="^1-.*_R2_filt\\.fastq\\.gz\$", full.names=TRUE))
+R1_P1 <- sort(list.files(filt_dir, pattern="^1-.*_R1_filt\\.fastq\\.gz$", full.names=TRUE))
+R2_P1 <- sort(list.files(filt_dir, pattern="^1-.*_R2_filt\\.fastq\\.gz$", full.names=TRUE))
 
 if (length(R1_P1) == 0) stop("Aucun fichier filtré plaque 1 trouvé dans ", filt_dir)
 cat(sprintf("  %d samples plaque 1 utilisés pour learnErrors\n", length(R1_P1)))
@@ -134,13 +134,13 @@ for (plate in plates) {
     cat(sprintf("--- Plaque %d ---\n", plate))
 
     R1_filt <- sort(list.files(filt_dir,
-        pattern=paste0("^", plate, "-.*_R1_filt\\.fastq\\.gz\$"), full.names=TRUE))
+        pattern=paste0("^", plate, "-.*_R1_filt\\.fastq\\.gz$"), full.names=TRUE))
     R2_filt <- sort(list.files(filt_dir,
-        pattern=paste0("^", plate, "-.*_R2_filt\\.fastq\\.gz\$"), full.names=TRUE))
+        pattern=paste0("^", plate, "-.*_R2_filt\\.fastq\\.gz$"), full.names=TRUE))
 
     if (length(R1_filt) == 0) { cat("  aucun fichier filtré, ignoré\n\n"); next }
 
-    sample_names <- sub("_R1_filt\\.fastq\\.gz\$", "", basename(R1_filt))
+    sample_names <- sub("_R1_filt\\.fastq\\.gz$", "", basename(R1_filt))
     names(R1_filt) <- sample_names
     names(R2_filt) <- sample_names
 
