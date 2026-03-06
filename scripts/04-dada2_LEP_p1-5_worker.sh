@@ -171,7 +171,7 @@ for (plate in plates) {
 
 # Fusion des tables plaques 1-5
 cat("=== mergeSequenceTables (plaques 1-5) ===\n")
-seqtab_P1_5 <- mergeSequenceTables(seqtabs)
+seqtab_P1_5 <- mergeSequenceTables(tables = seqtabs)
 cat(sprintf("  %d samples × %d ASVs\n", nrow(seqtab_P1_5), ncol(seqtab_P1_5)))
 
 saveRDS(seqtab_P1_5, file.path(shared_dir, "seqtab_LEP_P1-5.rds"))
