@@ -39,11 +39,14 @@ trap 'mv -f "${SLURM_JOB_NAME}_${SLURM_JOB_ID}".{out,err} "$PROJECT_DIR/logs/" 2
 _log START
 
 # ─────────────────────────────────────────────────────────────────────────────
-Rscript - <<EOF
+export R_SHARED_DIR="$SHARED_DIR"
+export R_SCRATCH="$RUN_SCRATCH"
+
+Rscript - <<'EOF'
 library(dada2)
 
-shared_dir <- "$SHARED_DIR"
-scratch    <- "$RUN_SCRATCH"
+shared_dir <- Sys.getenv("R_SHARED_DIR")
+scratch    <- Sys.getenv("R_SCRATCH")
 n_threads  <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset="8"))
 
 cat("=== mergeSequenceTables + removeBimeraDenovo — LEP ===\n\n")

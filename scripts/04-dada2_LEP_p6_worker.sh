@@ -41,14 +41,16 @@ trap 'mv -f "${SLURM_JOB_NAME}_${SLURM_JOB_ID}".{out,err} "$PROJECT_DIR/logs/" 2
 _log START
 
 # ─────────────────────────────────────────────────────────────────────────────
-DEMUX_DIR="$PROJECT_DIR/results/cutadapt_LEP_4258570/demux"
+export R_DEMUX_DIR="$PROJECT_DIR/results/cutadapt_LEP_4258570/demux"
+export R_SCRATCH="$RUN_SCRATCH"
+export R_SHARED_DIR="$SHARED_DIR"
 
-Rscript - <<EOF
+Rscript - <<'EOF'
 library(dada2)
 
-demux_dir  <- "$DEMUX_DIR"
-scratch    <- "$RUN_SCRATCH"
-shared_dir <- "$SHARED_DIR"
+demux_dir  <- Sys.getenv("R_DEMUX_DIR")
+scratch    <- Sys.getenv("R_SCRATCH")
+shared_dir <- Sys.getenv("R_SHARED_DIR")
 n_threads  <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset="16"))
 
 # ─────────────────────────────────────────────────────────────────────────

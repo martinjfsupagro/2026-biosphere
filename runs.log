@@ -1018,3 +1018,5 @@ T3_L001
 2026-03-05T17:25:41+01:00 | qc_post_cutadapt_4258942 | END | 2fc2e40 | slurm_script | 
 2026-03-06T17:31:16+01:00 | dada2_LEP_p1-5_4298368 | START | cdbd6d6 | slurm_script | 
 2026-03-06T17:31:30+01:00 | dada2_LEP_p1-5_4298368 | FAIL | cdbd6d6 | slurm_script | exit 1
+2026-03-06T17:31:56+01:00 | dada2_LEP_p1-5_4298369 | START | 5eea464 | slurm_script | 
+2026-03-06T17:32:03+01:00 | dada2_LEP_p1-5_4298369 | FAIL | 5eea464 | slurm_script | exit 1
