@@ -1014,3 +1014,5 @@ T3_L001
 2026-03-05T16:02:44+01:00 | cutadapt_HCO_4258572 | END | 06b439e | slurm_script | marker=HCO samples=499 reads=58408502
 2026-03-05T16:15:25+01:00 | cutadapt_HEX_4258571 | END | 06b439e | slurm_script | marker=HEX samples=499 reads=187382725
 2026-03-05T16:19:02+01:00 | cutadapt_LEP_4258570 | END | 06b439e | slurm_script | marker=LEP samples=499 reads=127739268
+2026-03-05T16:43:59+01:00 | qc_post_cutadapt_4258942 | START | 2fc2e40 | slurm_script | 
+2026-03-05T17:25:41+01:00 | qc_post_cutadapt_4258942 | END | 2fc2e40 | slurm_script | 
