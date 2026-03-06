@@ -43,7 +43,7 @@ JID2=$(sbatch --parsable \
     --dependency=afterok:"$JID1" \
     --job-name="dada2_LEP_p6" \
     --export=ALL,SHARED_DIR="$SHARED_DIR" \
-    "$SCRIPTS_DIR/04-dada2_LEP_p6worker.sh")
+    "$SCRIPTS_DIR/04-dada2_LEP_p6_worker.sh")
 echo "→ Job 2 soumis (plaque 6)    : $JID2 (attend $JID1)"
 
 # ── Job 3 : final (attend job 1 ET job 2) ────────────────────────────────────
