@@ -96,15 +96,54 @@ cat(sprintf("ASVs après : %d (%.1f%% des ASVs, %.1f%% des reads conservés)\n",
 cat("\nDistribution des longueurs finales :\n")
 print(table(nchar(getSequences(seqtab_nochim))))
 
+# ── Tableau de suivi complet ──────────────────────────────────────────────
+cat("\n=== Tableau de suivi des reads ===\n\n")
+
+track_p1_5 <- read.csv(file.path(shared_dir, "track_LEP_P1-5.csv"))
+track_p6   <- read.csv(file.path(shared_dir, "track_LEP_P6.csv"))
+track_all  <- rbind(track_p1_5, track_p6)
+
+# Colonne non_chimera depuis seqtab_nochim (rowSums = total reads non-chimériques par sample)
+nonchim <- data.frame(
+    sample      = rownames(seqtab_nochim),
+    non_chimera = rowSums(seqtab_nochim),
+    row.names   = NULL
+)
+track_all <- merge(track_all, nonchim, by="sample", all.x=TRUE)
+track_all[is.na(track_all)] <- 0
+track_all <- track_all[order(track_all$sample), ]
+
+# Pourcentages de rétention par étape
+track_all$pct_filtered  <- round(100 * track_all$filtered    / track_all$input,       1)
+track_all$pct_merged    <- round(100 * track_all$merged       / track_all$filtered,    1)
+track_all$pct_nonchim   <- round(100 * track_all$non_chimera  / track_all$merged,      1)
+track_all$pct_total     <- round(100 * track_all$non_chimera  / track_all$input,       1)
+
+cat("Aperçu (10 premiers samples) :\n")
+print(head(track_all[, c("sample","input","filtered","merged","non_chimera",
+                          "pct_filtered","pct_merged","pct_nonchim","pct_total")], 10))
+
+cat(sprintf("\nRésumé global :\n"))
+cat(sprintf("  Reads input total     : %d\n", sum(track_all$input)))
+cat(sprintf("  Reads filtrés         : %d (%.1f%%)\n",
+            sum(track_all$filtered),   100*sum(track_all$filtered)/sum(track_all$input)))
+cat(sprintf("  Reads mergés          : %d (%.1f%%)\n",
+            sum(track_all$merged),     100*sum(track_all$merged)/sum(track_all$input)))
+cat(sprintf("  Reads non-chimériques : %d (%.1f%%)\n",
+            sum(track_all$non_chimera),100*sum(track_all$non_chimera)/sum(track_all$input)))
+
 # ── Sauvegarde ────────────────────────────────────────────────────────────
 saveRDS(seqtab_nochim,
         file.path(scratch, "seqtab_LEP_final.rds"))
 write.csv(t(seqtab_nochim),
           file.path(scratch, "seqtab_LEP_final.csv"))
+write.csv(track_all,
+          file.path(scratch, "track_LEP_final.csv"), row.names=FALSE)
 
 cat(sprintf("\n✓ Fichiers finaux dans %s :\n", scratch))
-cat("  seqtab_LEP_final.rds  — pour analyses R aval (assignation taxonomique etc.)\n")
-cat("  seqtab_LEP_final.csv  — ASVs en lignes, samples en colonnes\n")
+cat("  seqtab_LEP_final.rds   — pour analyses R aval (assignation taxonomique etc.)\n")
+cat("  seqtab_LEP_final.csv   — ASVs en lignes, samples en colonnes\n")
+cat("  track_LEP_final.csv    — suivi des reads par sample à chaque étape\n")
 EOF
 
 # ─────────────────────────────────────────────────────────────────────────────

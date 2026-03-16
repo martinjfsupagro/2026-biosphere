@@ -90,6 +90,16 @@ total_out <- sum(out[, 2])
 pct       <- round(100 * total_out / total_in, 1)
 cat(sprintf("  %d → %d reads (%.1f%% conservés)\n\n", total_in, total_out, pct))
 
+# Suivi par sample
+getN <- function(x) sum(getUniques(x))
+snames_filter <- sub("_R1\\.fastq\\.gz$", "", basename(R1))
+track_filter <- data.frame(
+    sample   = snames_filter,
+    input    = out[, 1],
+    filtered = out[, 2],
+    row.names = NULL
+)
+
 # ─────────────────────────────────────────────────────────────────────────
 # ÉTAPE 2 : charger le modèle d'erreur produit par job 1
 # ─────────────────────────────────────────────────────────────────────────
@@ -134,6 +144,21 @@ print(table(nchar(getSequences(seqtab_P6))))
 
 saveRDS(seqtab_P6, file.path(shared_dir, "seqtab_LEP_P6.rds"))
 cat(sprintf("\n✓ seqtab_LEP_P6.rds sauvegardé dans %s\n", shared_dir))
+
+# ── Tableau de suivi des reads (plaque 6) ────────────────────────────────
+track_dada <- data.frame(
+    sample       = sample_names,
+    denoised_fwd = sapply(dada_fwd, getN),
+    denoised_rev = sapply(dada_rev, getN),
+    merged       = sapply(mergers,  getN),
+    row.names    = NULL
+)
+track <- merge(track_filter, track_dada, by="sample", all=TRUE)
+track <- track[order(track$sample), ]
+
+write.csv(track, file.path(shared_dir, "track_LEP_P6.csv"), row.names=FALSE)
+cat("\nSuivi des reads — plaque 6 (premières lignes) :\n")
+print(head(track, 10))
 EOF
 
 # ─────────────────────────────────────────────────────────────────────────────

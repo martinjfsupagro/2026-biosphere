@@ -71,6 +71,11 @@ cat("=== filterAndTrim (plaques 1-5) ===\n\n")
 filt_dir <- file.path(scratch, "filtered")
 dir.create(filt_dir, showWarnings=FALSE)
 
+# Accumulateur de suivi des reads
+track_filter <- list()  # input + filtered, par plaque
+track_dada   <- list()  # denoised_fwd, denoised_rev, merged, par plaque
+getN <- function(x) sum(getUniques(x))
+
 for (plate in plates) {
     cat(sprintf("--- Plaque %d ---\n", plate))
 
@@ -99,6 +104,15 @@ for (plate in plates) {
     pct       <- round(100 * total_out / total_in, 1)
     cat(sprintf("  %d samples : %d → %d reads (%.1f%% conservés)\n\n",
                 length(R1), total_in, total_out, pct))
+
+    # Suivi par sample : noms propres (sans suffixe _R1.fastq.gz)
+    snames <- sub("_R1\\.fastq\\.gz$", "", basename(R1))
+    track_filter[[plate]] <- data.frame(
+        sample   = snames,
+        input    = out[, 1],
+        filtered = out[, 2],
+        row.names = NULL
+    )
 }
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -162,6 +176,15 @@ for (plate in plates) {
 
     cat(sprintf("  %d samples → %d ASVs\n", nrow(seqtabs[[plate]]), ncol(seqtabs[[plate]])))
 
+    # Suivi reads : denoised + merged (avant libération mémoire)
+    track_dada[[plate]] <- data.frame(
+        sample       = sample_names,
+        denoised_fwd = sapply(dada_fwd, getN),
+        denoised_rev = sapply(dada_rev, getN),
+        merged       = sapply(mergers,  getN),
+        row.names    = NULL
+    )
+
     # Libération mémoire — on garde seqtabs[[plate]], on libère tout le reste
     rm(derep_fwd, derep_rev, dada_fwd, dada_rev, mergers)
     gc()
@@ -176,6 +199,19 @@ cat(sprintf("  %d samples × %d ASVs\n", nrow(seqtab_P1_5), ncol(seqtab_P1_5)))
 
 saveRDS(seqtab_P1_5, file.path(shared_dir, "seqtab_LEP_P1-5.rds"))
 cat(sprintf("✓ seqtab_LEP_P1-5.rds sauvegardé dans %s\n", shared_dir))
+
+# ── Tableau de suivi des reads (plaques 1-5) ──────────────────────────────
+track_f <- do.call(rbind, track_filter)
+track_d <- do.call(rbind, track_dada)
+# Jointure sur le nom de sample (track_filter utilise noms bruts, track_dada noms filtrés)
+# Les noms filtrés = noms bruts sans _R1.fastq.gz → on normalise
+track_f$sample <- sub("_R1\\.fastq\\.gz$", "", track_f$sample)
+track <- merge(track_f, track_d, by="sample", all=TRUE)
+track <- track[order(track$sample), ]
+
+write.csv(track, file.path(shared_dir, "track_LEP_P1-5.csv"), row.names=FALSE)
+cat("\nSuivi des reads — plaques 1-5 (premières lignes) :\n")
+print(head(track, 10))
 EOF
 
 # ─────────────────────────────────────────────────────────────────────────────
