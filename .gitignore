@@ -1,6 +1,7 @@
 # Données
 raw/
 data/
+database/
 *.fastq*
 *.fq*
 *.bam

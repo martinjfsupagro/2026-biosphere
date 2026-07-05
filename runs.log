@@ -1036,3 +1036,9 @@ T3_L001
 2026-03-16T22:08:36+01:00 | dada2_LEP_p6_4564727 | END | 484490b | slurm_script | 
 2026-03-16T22:08:56+01:00 | dada2_LEP_final_4564728 | START | 484490b | slurm_script | 
 2026-03-16T22:11:37+01:00 | dada2_LEP_final_4564728 | END | 484490b | slurm_script | 
+2026-07-05T18:40:02+02:00 | dada2_HEX_p1-5_8151447 | START | 4792819 | slurm_script | 
+2026-07-05T19:55:17+02:00 | dada2_HEX_p1-5_8151447 | END | 4792819 | slurm_script | 
+2026-07-05T19:55:21+02:00 | dada2_HEX_p6_8151448 | START | 4792819 | slurm_script | 
+2026-07-05T20:41:10+02:00 | dada2_HEX_p6_8151448 | END | 4792819 | slurm_script | 
+2026-07-05T20:41:14+02:00 | dada2_HEX_final_8151449 | START | 4792819 | slurm_script | 
+2026-07-05T20:53:43+02:00 | dada2_HEX_final_8151449 | END | 4792819 | slurm_script | 
